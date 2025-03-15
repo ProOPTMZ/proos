@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>SpecrixOS - Профессиональная сборка Windows 10</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff0000;
+            --dark: #000000;
+            --accent: #330000;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: white;
+            margin: 0;
+            overflow: auto;
+        }
+        .snowflake {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+        .benchmark-card {
+            position: relative;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid transparent;
+            border-image: linear-gradient(45deg, #ff0000, #cc0000) 1;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+        .benchmark-card:hover {
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        .benchmark-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, #ff0000, #cc0000) 1;
+            border-radius: 20px;
+            animation: borderPulse 2s infinite;
+        }
+        @keyframes borderPulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.3; }
+        }
+        .benchmark-header {
+            font-size: 1.5em;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .benchmark-header::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -5px;
+            height: 2px;
+            background: linear-gradient(90deg, #ff0000, #cc0000);
+        }
+        .stat-item {
+            position: relative;
+            padding: 20px;
+            transition: 0.5s;
+        }
+        .stat-item:hover .stat-details {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .stat-number {
+            font-size: 2em;
+            color: var(--primary);
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .stat-details {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s;
+        }
+        .chart {
+            width: 120px;
+            height: 120px;
+            background: conic-gradient(var(--primary) 0%, var(--primary) 42%, #330000 42%, #330000 100%);
+            border-radius: 50%;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .chart span {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+        }
+        .chart-line {
+            height: 10px;
+            background: var(--primary);
+            border-radius: 5px;
+            width: 0%;
+            transition: 0.5s;
+        }
+        .stat-item:hover .chart-line {
+            width: 42%;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 150px 20px;
+            animation: pulse 2s infinite;
+        }
+        .download-btn {
+            background: var(--primary);
+            border-color: var(--primary);
+            padding: 15px 40px;
+            font-size: 1.1em;
+            transition: transform 0.3s, box-shadow 0.3s, filter 0.3s;
+            cursor: pointer;
+            opacity: 1;
+            margin: 10px;
+        }
+        .download-btn:hover {
+            filter: brightness(110%);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+        .game-performance {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--dark), var(--accent));
+        }
+        .performance-table {
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        .table-dark {
+            background: rgba(0, 0, 0, 0.7);
+        }
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
+            border-color: var(--primary);
+        }
+        .creator-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .creator-button a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background: var(--primary);
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .creator-button a:hover {
+            transform: scale(1.1);
+        }
+        .footer {
+            background: var(--dark);
+            padding: 30px;
+            margin-top: 40px;
+        }
+        .image-box {
+            margin: 20px;
+        }
+        .image-box img {
+            max-width: 100%;
+            height: auto;
+            border: 3px solid var(--primary);
+            border-radius: 10px;
+        }
+        .images-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: nowrap; /* Запрет переноса на новую строку */
+        }
+        .images-section img {
+            max-width: 300px; /* Ограничение ширины изображений */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="snow"></div>
+    <section class="hero">
+        <div class="container hero-content" data-aos="fade-up">
+            <h1 class="display-3">SpecrixOS 21H2</h1>
+            <p class="lead">Профессиональная сборка для гейминга и работы</p>
+            <div class="download-container">
+                <a href="https://drive.google.com/file/d/1XILyVlupmGBh9Cc-D6tsuy0UMD46WsQr/view?usp=drive_link" target="_blank" class="btn btn-lg download-btn">Скачать SpecrixOS</a>
+                <a href="https://drive.google.com/file/d/1cZLdmaT7umujziRtHYwbf9DkjClS0ZNZ/view?usp=drive_link" target="_blank" class="btn btn-lg download-btn">Скачать курсор</a>
+                <a href="https://drive.google.com/file/d/1OOXpkazgiAPJUBU5bKVNUtXpONiwg2-a/view?usp=sharing" target="_blank" class="btn btn-lg download-btn">Скачать лучший эмулятор</a>
+            </div>
+        </div>
+    </section>
+    <section class="benchmarks">
+        <div class="container">
+            <h2 class="text-center mb-4">Производительность</h2>
+            <div class="benchmark-card" data-aos="fade-right">
+                <div class="benchmark-header">3DMark Time Spy</div>
+                <div class="benchmark-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">11,200</div>
+                        <div>Extreme Preset</div>
+                        <div class="stat-details">
+                            <div class="chart">
+                                <span>+42%</span>
+                            </div>
+                            <div class="chart-line"></div>
+                            <div>Прирост производительности</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="benchmark-card" data-aos="fade-left">
+                <div class="benchmark-header">PCMark 10</div>
+                <div class="benchmark-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">8,900</div>
+                        <div>Overall Score</div>
+                        <div class="stat-details">
+                            <div class="chart" style="--chart-percent: 35%">
+                                <span>+35%</span>
+                            </div>
+                            <div class="chart-line" style="--chart-width: 35%"></div>
+                            <div>Общий прирост</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Добавление изображений в красной рамке -->
+    <section class="images-section">
+        <div class="container">
+            <div class="d-flex justify-content-center flex-wrap">
+                <div class="image-box">
+                    <a href="https://postimg.cc/N9xLtkCs" target="_blank">
+                        <img src="https://i.postimg.cc/TwzbrkrD/5380069480752867300.jpg" alt="5380069480752867300">
+                    </a>
+                </div>
+                <div class="image-box">
+                    <a href="https://postimg.cc/5jx63Dj6" target="_blank">
+                        <img src="https://i.postimg.cc/zDhKJrrS/5380069480752867301.jpg" alt="5380069480752867301">
+                    </a>
+                </div>
+                <div class="image-box">
+                    <a href="https://postimg.cc/Wqbz1qxM" target="_blank">
+                        <img src="https://i.postimg.cc/hvVdM9r3/5380069480752867302.jpg" alt="5380069480752867302">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="game-performance">
+        <div class="container">
+            <h2 class="text-center mb-5" data-aos="fade-up">Производительность в играх</h2>
+            <div class="performance-table">
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>Игра</th>
+                            <th>Режим</th>
+                            <th>SpecrixOS</th>
+                            <th>Windows 10</th>
+                            <th>Прирост</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-aos="fade-up" data-aos-delay="100">
+                            <td>Standoff 2</td>
+                            <td>Ultra Settings</td>
+                            <td>144 FPS</td>
+                            <td>98 FPS</td>
+                            <td>+47%</td>
+                        </tr>
+                        <tr data-aos="fade-up" data-aos-delay="200">
+                            <td>CS2</td>
+                            <td>Competitive</td>
+                            <td>347 FPS</td>
+                            <td>267 FPS</td>
+                            <td>+30%</td>
+                        </tr>
+                        <tr data-aos="fade-up" data-aos-delay="300">
+                            <td>GTA V</td>
+                            <td>Max Settings</td>
+                            <td>88 FPS</td>
+                            <td>62 FPS</td>
+                            <td>+42%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 SpecrixOS. Все права защищены.</p>
+        </div>
+    </footer>
+    <div class="creator-button">
+        <a href="https://taplink.cc/proandsky" target="_blank">
+            Связаться с разработчиками
+        </a>
+    </div>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true
+        });
+        const snowContainer = document.getElementById('snow');
+        for(let i = 0; i < 200; i++) {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.width = Math.random() * 5 + 2 + 'px';
+            snowflake.style.height = snowflake.style.width;
+            snowflake.style.animationDelay = Math.random() * 5 + 's';
+            snowContainer.appendChild(snowflake);
+        }
+    </script>
+</body>
+</html>
